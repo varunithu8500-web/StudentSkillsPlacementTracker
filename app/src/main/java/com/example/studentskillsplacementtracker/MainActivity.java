@@ -1,8 +1,10 @@
 package com.example.studentskillsplacementtracker;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,6 +38,11 @@ public class MainActivity extends AppCompatActivity {
 
         // Login button click
         loginButton.setOnClickListener(view -> loginUser());
+
+        // Open the student registration screen
+        TextView registerTextView = findViewById(R.id.registerTextView);
+        registerTextView.setOnClickListener(view ->
+                startActivity(new Intent(MainActivity.this, RegisterActivity.class)));
     }
 
     private void loginUser() {
