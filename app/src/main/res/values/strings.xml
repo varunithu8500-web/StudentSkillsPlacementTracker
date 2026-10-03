@@ -1,3 +1,38 @@
 <resources>
     <string name="app_name">Student Skills &amp; Placement Tracker</string>
+
+    <!-- Student registration -->
+    <string name="register_title">Student Registration</string>
+    <string name="hint_full_name">Full Name</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_confirm_password">Confirm Password</string>
+    <string name="hint_department">Department</string>
+    <string name="hint_year">Year (1 - 4)</string>
+    <string name="hint_cgpa">CGPA (0 - 10)</string>
+    <string name="btn_register">Register</string>
+    <string name="link_already_have_account">Already have an account? Login</string>
+
+    <!-- Registration validation messages -->
+    <string name="err_name_required">Please enter your full name</string>
+    <string name="err_email_required">Please enter your email</string>
+    <string name="err_email_invalid">Please enter a valid email address</string>
+    <string name="err_password_required">Please enter a password</string>
+    <string name="err_password_short">Password must be at least 6 characters</string>
+    <string name="err_confirm_password_required">Please confirm your password</string>
+    <string name="err_password_mismatch">Passwords do not match</string>
+    <string name="err_department_required">Please enter your department</string>
+    <string name="err_year_required">Please enter your year</string>
+    <string name="err_year_invalid">Year must be a whole number between 1 and 4</string>
+    <string name="err_cgpa_required">Please enter your CGPA</string>
+    <string name="err_cgpa_invalid">CGPA must be a number between 0 and 10</string>
+
+    <!-- Registration result messages -->
+    <string name="msg_registration_success">Registration successful. Please log in.</string>
+    <string name="err_registration_failed">Registration failed. Please try again.</string>
+    <string name="err_email_in_use">This email is already registered. Please log in instead.</string>
+    <string name="err_weak_password">That password is too weak. Please use at least 6 characters.</string>
+    <string name="err_operation_not_allowed">Email and password sign-up is not available right now.</string>
+    <string name="err_network">Network error. Please check your connection and try again.</string>
+    <string name="err_too_many_requests">Too many attempts. Please try again later.</string>
 </resources>
