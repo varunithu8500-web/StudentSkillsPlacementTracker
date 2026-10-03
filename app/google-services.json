@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "498164333691",
+    "project_id": "studentskillsplaceme-1333a54e",
+    "storage_bucket": "studentskillsplaceme-1333a54e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:498164333691:android:a6982663bb6cd90910b6de",
+        "android_client_info": {
+          "package_name": "com.example.studentskillsplacementtracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKEWxiXQiDPmSPIx8T0NgOcJ0u4-SaQ1A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
