@@ -226,4 +226,56 @@
     <!-- Delete coding statistics confirmation -->
     <string name="dialog_delete_coding_stats_title">Delete this coding statistics entry?</string>
     <string name="dialog_delete_coding_stats_message">This entry will be removed from your profile.</string>
+
+    <!-- Coordinator dashboard -->
+    <string name="coordinator_home_title">Coordinator Dashboard</string>
+    <string name="coordinator_home_welcome">Welcome, %1$s</string>
+    <string name="coordinator_home_welcome_unknown">Welcome</string>
+    <string name="coordinator_home_subtitle">Manage company placement requirements.</string>
+    <string name="btn_manage_companies">Manage Companies</string>
+
+    <!-- Companies (coordinator management) -->
+    <string name="companies_title">Companies</string>
+    <string name="btn_add_company">Add Company</string>
+    <string name="companies_empty">No companies have been added yet.</string>
+    <string name="companies_load_error">Could not load companies. Please check your connection and try again.</string>
+
+    <!-- Add / edit company form -->
+    <string name="company_add_title">Add Company</string>
+    <string name="company_edit_title">Edit Company</string>
+    <string name="hint_company_name">Company Name</string>
+    <string name="hint_company_role">Job Role (e.g. Software Engineer)</string>
+    <string name="hint_company_min_cgpa">Minimum CGPA (0 - 10)</string>
+    <string name="hint_company_required_skills">Required Skills (comma separated)</string>
+    <string name="hint_company_min_projects">Minimum Projects</string>
+    <string name="hint_company_location">Location (optional)</string>
+
+    <!-- Company list item -->
+    <string name="company_item_role">Role: %1$s</string>
+    <string name="company_item_min_cgpa">Minimum CGPA: %1$s</string>
+    <string name="company_item_min_projects">Minimum Projects: %1$d</string>
+    <string name="company_item_location">Location: %1$s</string>
+
+    <!-- Company validation messages -->
+    <string name="err_company_name_required">Please enter the company name</string>
+    <string name="err_company_role_required">Please enter the job role</string>
+    <string name="err_company_min_cgpa_required">Please enter the minimum CGPA</string>
+    <string name="err_company_min_cgpa_invalid">Minimum CGPA must be a number between 0 and 10</string>
+    <string name="err_company_min_projects_required">Please enter the minimum number of projects</string>
+    <string name="err_company_min_projects_invalid">Minimum projects must be a whole number of 0 or more</string>
+
+    <!-- Company result messages -->
+    <string name="msg_company_added">Company added</string>
+    <string name="msg_company_updated">Company updated</string>
+    <string name="msg_company_deleted">Company deleted</string>
+    <string name="err_company_save_failed">Could not save the company. Please check your connection and try again.</string>
+    <string name="err_company_delete_failed">Could not delete the company. Please check your connection and try again.</string>
+    <string name="err_company_load_failed">Could not load the company. Please check your connection and try again.</string>
+
+    <!-- Delete company confirmation -->
+    <string name="dialog_delete_company_title">Delete this company?</string>
+    <string name="dialog_delete_company_message">This company requirement will be removed.</string>
+
+    <!-- Login routing -->
+    <string name="err_role_unknown">Your account role is not recognised. Please contact the placement coordinator.</string>
 </resources>

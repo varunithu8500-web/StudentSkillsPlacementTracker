@@ -57,6 +57,16 @@
             android:name=".AddEditCodingStatsActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".CoordinatorHomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CompaniesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddEditCompanyActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>
