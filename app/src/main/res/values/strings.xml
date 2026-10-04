@@ -59,7 +59,7 @@
     <string name="student_home_label_department">Department: %1$s</string>
     <string name="student_home_label_year">Year: %1$s</string>
     <string name="student_home_label_cgpa">CGPA: %1$s</string>
-    <string name="student_home_coming_soon">Projects, certifications and placement features are coming soon.</string>
+    <string name="student_home_coming_soon">Placement features are coming soon.</string>
     <string name="student_home_profile_missing">Your profile details are not available yet.</string>
     <string name="student_home_profile_error">Could not load your profile. Please check your connection and try again.</string>
 
@@ -106,4 +106,44 @@
     <!-- Delete skill confirmation -->
     <string name="dialog_delete_skill_title">Delete this skill?</string>
     <string name="dialog_delete_skill_message">This skill will be removed from your profile.</string>
+
+    <!-- Projects (FR-PRJ-01) -->
+    <string name="btn_my_projects">My Projects</string>
+    <string name="projects_title">My Projects</string>
+    <string name="btn_add_project">Add Project</string>
+    <string name="projects_empty">You have not added any projects yet.</string>
+    <string name="projects_load_error">Could not load your projects. Please check your connection and try again.</string>
+
+    <!-- Add / edit project form -->
+    <string name="project_add_title">Add Project</string>
+    <string name="project_edit_title">Edit Project</string>
+    <string name="hint_project_name">Project Name</string>
+    <string name="hint_project_description">Description</string>
+    <string name="hint_project_technologies">Technologies (comma separated)</string>
+    <string name="hint_project_status">Status (Planned / In Progress / Completed)</string>
+    <string name="hint_project_repository_link">Repository Link</string>
+
+    <!-- Project list item -->
+    <string name="project_item_status">Status: %1$s</string>
+    <string name="project_item_description">Description: %1$s</string>
+    <string name="project_item_technologies">Technologies: %1$s</string>
+    <string name="project_item_repository">Repository: %1$s</string>
+
+    <!-- Project validation messages -->
+    <string name="err_project_name_required">Please enter the project name</string>
+    <string name="err_project_status_required">Please enter the project status</string>
+    <string name="err_project_status_invalid">Status must be Planned, In Progress or Completed</string>
+    <string name="err_project_repository_link_invalid">Please enter a valid web link starting with http</string>
+
+    <!-- Project result messages -->
+    <string name="msg_project_added">Project added</string>
+    <string name="msg_project_updated">Project updated</string>
+    <string name="msg_project_deleted">Project deleted</string>
+    <string name="err_project_save_failed">Could not save the project. Please check your connection and try again.</string>
+    <string name="err_project_delete_failed">Could not delete the project. Please check your connection and try again.</string>
+    <string name="err_project_load_failed">Could not load the project. Please check your connection and try again.</string>
+
+    <!-- Delete project confirmation -->
+    <string name="dialog_delete_project_title">Delete this project?</string>
+    <string name="dialog_delete_project_message">This project will be removed from your profile.</string>
 </resources>
