@@ -51,4 +51,18 @@
     <string name="student_home_welcome">Welcome, %1$s</string>
     <string name="student_home_welcome_unknown">Welcome</string>
     <string name="btn_logout">Logout</string>
+
+    <!-- Student profile / dashboard -->
+    <string name="student_home_profile_section">Profile</string>
+    <string name="student_home_label_name">Name: %1$s</string>
+    <string name="student_home_label_email">Email: %1$s</string>
+    <string name="student_home_label_department">Department: %1$s</string>
+    <string name="student_home_label_year">Year: %1$s</string>
+    <string name="student_home_label_cgpa">CGPA: %1$s</string>
+    <string name="student_home_coming_soon">Skills, projects, certifications and placement features are coming soon.</string>
+    <string name="student_home_profile_missing">Your profile details are not available yet.</string>
+    <string name="student_home_profile_error">Could not load your profile. Please check your connection and try again.</string>
+
+    <!-- Profile persistence -->
+    <string name="err_profile_save_failed">We could not complete your registration. Please try again.</string>
 </resources>
