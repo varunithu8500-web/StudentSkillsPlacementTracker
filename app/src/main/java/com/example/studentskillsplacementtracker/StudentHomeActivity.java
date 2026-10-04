@@ -37,6 +37,7 @@ public class StudentHomeActivity extends AppCompatActivity {
     private TextView yearTextView;
     private TextView cgpaTextView;
     private TextView profileMessageTextView;
+    private Button skillsButton;
     private Button logoutButton;
 
     // Email of the signed-in account, used as a fallback welcome value.
@@ -69,11 +70,16 @@ public class StudentHomeActivity extends AppCompatActivity {
         yearTextView = findViewById(R.id.yearTextView);
         cgpaTextView = findViewById(R.id.cgpaTextView);
         profileMessageTextView = findViewById(R.id.profileMessageTextView);
+        skillsButton = findViewById(R.id.skillsButton);
         logoutButton = findViewById(R.id.logoutButton);
 
         // Welcome the authenticated user right away; refined once the profile loads
         userEmail = currentUser.getEmail();
         setWelcome(userEmail);
+
+        // Open the skills list
+        skillsButton.setOnClickListener(view ->
+                startActivity(new Intent(StudentHomeActivity.this, SkillsActivity.class)));
 
         // Logout button click
         logoutButton.setOnClickListener(view -> logout());
