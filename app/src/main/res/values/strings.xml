@@ -183,4 +183,47 @@
     <!-- Delete certification confirmation -->
     <string name="dialog_delete_certification_title">Delete this certification?</string>
     <string name="dialog_delete_certification_message">This certification will be removed from your profile.</string>
+
+    <!-- Coding practice statistics -->
+    <string name="btn_my_coding">Coding Practice</string>
+    <string name="coding_stats_title">Coding Practice Statistics</string>
+    <string name="btn_add_coding_stats">Add Coding Statistics</string>
+    <string name="coding_stats_empty">You have not added any coding statistics yet.</string>
+    <string name="coding_stats_load_error">Could not load your coding statistics. Please check your connection and try again.</string>
+
+    <!-- Add / edit coding statistics form -->
+    <string name="coding_stats_add_title">Add Coding Statistics</string>
+    <string name="coding_stats_edit_title">Edit Coding Statistics</string>
+    <string name="hint_coding_platform">Platform</string>
+    <string name="hint_coding_easy">Easy</string>
+    <string name="hint_coding_medium">Medium</string>
+    <string name="hint_coding_hard">Hard</string>
+
+    <!-- Coding statistics list item -->
+    <string name="coding_item_platform">Platform: %1$s</string>
+    <string name="coding_item_easy">Easy: %1$d</string>
+    <string name="coding_item_medium">Medium: %1$d</string>
+    <string name="coding_item_hard">Hard: %1$d</string>
+    <string name="coding_item_total">Total: %1$d</string>
+
+    <!-- Coding statistics validation messages -->
+    <string name="err_coding_platform_required">Please enter the platform</string>
+    <string name="err_coding_easy_required">Please enter the easy count</string>
+    <string name="err_coding_easy_invalid">Easy count must be a whole number of 0 or more</string>
+    <string name="err_coding_medium_required">Please enter the medium count</string>
+    <string name="err_coding_medium_invalid">Medium count must be a whole number of 0 or more</string>
+    <string name="err_coding_hard_required">Please enter the hard count</string>
+    <string name="err_coding_hard_invalid">Hard count must be a whole number of 0 or more</string>
+
+    <!-- Coding statistics result messages -->
+    <string name="msg_coding_stats_added">Coding statistics added</string>
+    <string name="msg_coding_stats_updated">Coding statistics updated</string>
+    <string name="msg_coding_stats_deleted">Coding statistics deleted</string>
+    <string name="err_coding_stats_save_failed">Could not save the coding statistics. Please check your connection and try again.</string>
+    <string name="err_coding_stats_delete_failed">Could not delete the coding statistics. Please check your connection and try again.</string>
+    <string name="err_coding_stats_load_failed">Could not load the coding statistics. Please check your connection and try again.</string>
+
+    <!-- Delete coding statistics confirmation -->
+    <string name="dialog_delete_coding_stats_title">Delete this coding statistics entry?</string>
+    <string name="dialog_delete_coding_stats_message">This entry will be removed from your profile.</string>
 </resources>

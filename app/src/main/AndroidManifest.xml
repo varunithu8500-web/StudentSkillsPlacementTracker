@@ -50,6 +50,13 @@
             android:name=".AddEditCertificationActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".CodingStatsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddEditCodingStatsActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>
