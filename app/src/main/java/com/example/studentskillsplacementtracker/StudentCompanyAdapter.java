@@ -1,5 +1,6 @@
 package com.example.studentskillsplacementtracker;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,6 +79,7 @@ public class StudentCompanyAdapter
         private final TextView studentCompanyRoleTextView;
         private final TextView studentCompanyMinCgpaTextView;
         private final TextView studentCompanyMinProjectsTextView;
+        private final TextView studentCompanyRequiredSkillsTextView;
         private final TextView studentCompanyLocationTextView;
 
         StudentCompanyViewHolder(@NonNull View itemView) {
@@ -91,6 +93,8 @@ public class StudentCompanyAdapter
                     itemView.findViewById(R.id.studentCompanyMinCgpaTextView);
             studentCompanyMinProjectsTextView =
                     itemView.findViewById(R.id.studentCompanyMinProjectsTextView);
+            studentCompanyRequiredSkillsTextView =
+                    itemView.findViewById(R.id.studentCompanyRequiredSkillsTextView);
             studentCompanyLocationTextView =
                     itemView.findViewById(R.id.studentCompanyLocationTextView);
         }
@@ -120,6 +124,21 @@ public class StudentCompanyAdapter
                     )
             );
 
+            // Required skills are optional; hide the row when none were configured.
+            String requiredSkills = joinRequiredSkills(company.getRequiredSkills());
+
+            if (requiredSkills.isEmpty()) {
+                studentCompanyRequiredSkillsTextView.setVisibility(View.GONE);
+            } else {
+                studentCompanyRequiredSkillsTextView.setText(
+                        itemView.getContext().getString(
+                                R.string.student_company_item_required_skills,
+                                requiredSkills
+                        )
+                );
+                studentCompanyRequiredSkillsTextView.setVisibility(View.VISIBLE);
+            }
+
             // Location is optional; hide the row when it was not supplied.
             String location = safe(company.getLocation());
 
@@ -137,6 +156,19 @@ public class StudentCompanyAdapter
 
             itemView.setOnClickListener(
                     view -> listener.onCompanySelected(company.getCompanyId()));
+        }
+
+        /**
+         * Joins the company's configured required skills for display, or returns
+         * an empty string when none were supplied.
+         */
+        private String joinRequiredSkills(List<String> requiredSkills) {
+
+            if (requiredSkills == null || requiredSkills.isEmpty()) {
+                return "";
+            }
+
+            return TextUtils.join(", ", requiredSkills);
         }
 
         private String safe(String value) {

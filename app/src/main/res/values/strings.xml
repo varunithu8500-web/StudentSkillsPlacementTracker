@@ -117,10 +117,10 @@
     <string name="project_add_title">Add Project</string>
     <string name="project_edit_title">Edit Project</string>
     <string name="hint_project_name">Project Name</string>
-    <string name="hint_project_description">Description</string>
-    <string name="hint_project_technologies">Technologies (comma separated)</string>
+    <string name="hint_project_description">Description (optional)</string>
+    <string name="hint_project_technologies">Technologies (optional, comma separated)</string>
     <string name="hint_project_status">Status (Planned / In Progress / Completed)</string>
-    <string name="hint_project_repository_link">Repository Link</string>
+    <string name="hint_project_repository_link">Repository Link (optional)</string>
 
     <!-- Project list item -->
     <string name="project_item_status">Status: %1$s</string>
@@ -230,7 +230,7 @@
     <string name="coordinator_home_title">Coordinator Dashboard</string>
     <string name="coordinator_home_welcome">Welcome, %1$s</string>
     <string name="coordinator_home_welcome_unknown">Welcome</string>
-    <string name="coordinator_home_subtitle">Manage company placement requirements.</string>
+    <string name="coordinator_home_subtitle">Manage company requirements and placement announcements.</string>
     <string name="btn_manage_companies">Manage Companies</string>
 
     <!-- Companies (coordinator management) -->
@@ -253,6 +253,7 @@
     <string name="company_item_role">Role: %1$s</string>
     <string name="company_item_min_cgpa">Minimum CGPA: %1$s</string>
     <string name="company_item_min_projects">Minimum Projects: %1$d</string>
+    <string name="company_item_required_skills">Required Skills: %1$s</string>
     <string name="company_item_location">Location: %1$s</string>
 
     <!-- Company validation messages -->
@@ -337,6 +338,7 @@
     <string name="student_company_item_role">Role: %1$s</string>
     <string name="student_company_item_min_cgpa">Minimum CGPA: %1$s</string>
     <string name="student_company_item_min_projects">Minimum Projects: %1$d</string>
+    <string name="student_company_item_required_skills">Required Skills: %1$s</string>
     <string name="student_company_item_location">Location: %1$s</string>
 
     <!-- Eligibility check (FR-ELG-01) -->
