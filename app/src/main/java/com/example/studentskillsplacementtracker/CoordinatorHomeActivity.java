@@ -14,8 +14,8 @@ import com.google.firebase.auth.FirebaseUser;
  * Authenticated landing screen for placement coordinators and admins.
  *
  * The role that leads here is decided in MainActivity from
- * students/{uid}.role. Company placement requirements are managed from this
- * screen; student facing placement features arrive in later phases.
+ * students/{uid}.role. Company placement requirements and placement
+ * announcements are both managed from this screen.
  */
 public class CoordinatorHomeActivity extends AppCompatActivity {
 

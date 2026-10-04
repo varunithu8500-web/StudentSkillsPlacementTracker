@@ -1,5 +1,6 @@
 package com.example.studentskillsplacementtracker;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,6 +80,7 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.CompanyV
         private final TextView companyRoleTextView;
         private final TextView companyMinCgpaTextView;
         private final TextView companyMinProjectsTextView;
+        private final TextView companyRequiredSkillsTextView;
         private final TextView companyLocationTextView;
         private final Button editCompanyButton;
         private final Button deleteCompanyButton;
@@ -90,6 +92,8 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.CompanyV
             companyRoleTextView = itemView.findViewById(R.id.companyRoleTextView);
             companyMinCgpaTextView = itemView.findViewById(R.id.companyMinCgpaTextView);
             companyMinProjectsTextView = itemView.findViewById(R.id.companyMinProjectsTextView);
+            companyRequiredSkillsTextView =
+                    itemView.findViewById(R.id.companyRequiredSkillsTextView);
             companyLocationTextView = itemView.findViewById(R.id.companyLocationTextView);
             editCompanyButton = itemView.findViewById(R.id.editCompanyButton);
             deleteCompanyButton = itemView.findViewById(R.id.deleteCompanyButton);
@@ -120,6 +124,21 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.CompanyV
                     )
             );
 
+            // Required skills are optional; hide the row when none were configured.
+            String requiredSkills = joinRequiredSkills(company.getRequiredSkills());
+
+            if (requiredSkills.isEmpty()) {
+                companyRequiredSkillsTextView.setVisibility(View.GONE);
+            } else {
+                companyRequiredSkillsTextView.setText(
+                        itemView.getContext().getString(
+                                R.string.company_item_required_skills,
+                                requiredSkills
+                        )
+                );
+                companyRequiredSkillsTextView.setVisibility(View.VISIBLE);
+            }
+
             // Location is optional; hide the row when it was not supplied.
             String location = safe(company.getLocation());
 
@@ -141,6 +160,19 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.CompanyV
 
         private void onDelete(Company company, OnCompanyActionListener listener) {
             listener.onDeleteCompany(company);
+        }
+
+        /**
+         * Joins the company's configured required skills for display, or returns
+         * an empty string when none were supplied.
+         */
+        private String joinRequiredSkills(List<String> requiredSkills) {
+
+            if (requiredSkills == null || requiredSkills.isEmpty()) {
+                return "";
+            }
+
+            return TextUtils.join(", ", requiredSkills);
         }
 
         private String safe(String value) {
