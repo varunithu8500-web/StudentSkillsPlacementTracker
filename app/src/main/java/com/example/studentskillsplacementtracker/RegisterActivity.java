@@ -11,14 +11,18 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.studentskillsplacementtracker.data.StudentRepository;
+import com.example.studentskillsplacementtracker.model.Student;
 import com.example.studentskillsplacementtracker.util.AuthErrorMapper;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 /**
  * Student registration screen.
  *
- * Creates the Firebase Authentication account only. No Firestore document is
- * written at this stage.
+ * Creates the Firebase Authentication account and then persists the student
+ * profile to Cloud Firestore. Registration is only considered complete once
+ * both steps succeed.
  */
 public class RegisterActivity extends AppCompatActivity {
 
@@ -41,6 +45,7 @@ public class RegisterActivity extends AppCompatActivity {
     private TextView loginLinkTextView;
 
     private FirebaseAuth firebaseAuth;
+    private StudentRepository studentRepository;
 
     // Guards against duplicate registration requests
     private boolean isRegistering = false;
@@ -65,6 +70,9 @@ public class RegisterActivity extends AppCompatActivity {
 
         // Get Firebase Authentication instance
         firebaseAuth = FirebaseAuth.getInstance();
+
+        // Single point of access for the student profile in Cloud Firestore
+        studentRepository = new StudentRepository();
 
         registerButton.setOnClickListener(view -> registerUser());
 
@@ -179,35 +187,24 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        // Only the email is trimmed. The password is never trimmed.
-        String email = emailEditText.getText().toString().trim();
-        String password = passwordEditText.getText().toString();
+        // Only the email is trimmed. The password is never trimmed and is never
+        // written to Firestore.
+        final String name = nameEditText.getText().toString().trim();
+        final String email = emailEditText.getText().toString().trim();
+        final String password = passwordEditText.getText().toString();
+        final String department = departmentEditText.getText().toString().trim();
+        // isFormValid() guarantees both values parse and fall within range.
+        final int year = Integer.parseInt(yearEditText.getText().toString().trim());
+        final double cgpa = Double.parseDouble(cgpaEditText.getText().toString().trim());
 
         setLoadingState(true);
 
-        // Firebase registration
+        // Step 1: create the Firebase Authentication account.
         firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
 
-                    setLoadingState(false);
-
-                    if (task.isSuccessful()) {
-
-                        Toast.makeText(
-                                RegisterActivity.this,
-                                R.string.msg_registration_success,
-                                Toast.LENGTH_LONG
-                        ).show();
-
-                        // Firebase signs the new account in automatically. Sign out
-                        // again so the user returns to MainActivity/Login and logs in
-                        // explicitly. No Firestore document is written yet.
-                        firebaseAuth.signOut();
-
-                        finish();
-
-                    } else {
-
+                    if (!task.isSuccessful()) {
+                        setLoadingState(false);
                         Toast.makeText(
                                 RegisterActivity.this,
                                 AuthErrorMapper.getMessage(
@@ -216,8 +213,92 @@ public class RegisterActivity extends AppCompatActivity {
                                 ),
                                 Toast.LENGTH_LONG
                         ).show();
+                        return;
                     }
+
+                    FirebaseUser user = (task.getResult() != null)
+                            ? task.getResult().getUser()
+                            : null;
+
+                    if (user == null) {
+                        setLoadingState(false);
+                        Toast.makeText(
+                                RegisterActivity.this,
+                                R.string.err_registration_failed,
+                                Toast.LENGTH_LONG
+                        ).show();
+                        return;
+                    }
+
+                    // Step 2: persist the student profile keyed by the Auth UID.
+                    Student student = new Student(
+                            user.getUid(),
+                            name,
+                            email,
+                            department,
+                            year,
+                            cgpa,
+                            Student.ROLE_STUDENT
+                    );
+
+                    saveProfileAndFinish(student);
                 });
+    }
+
+    /**
+     * Writes the student profile to Firestore. Registration is only considered
+     * complete once this write succeeds.
+     */
+    private void saveProfileAndFinish(Student student) {
+
+        studentRepository.createProfile(student, task -> {
+
+            setLoadingState(false);
+
+            if (task.isSuccessful()) {
+
+                Toast.makeText(
+                        RegisterActivity.this,
+                        R.string.msg_registration_success,
+                        Toast.LENGTH_LONG
+                ).show();
+
+                // Firebase signs the new account in automatically. Sign out again
+                // so the user returns to Login and signs in explicitly.
+                firebaseAuth.signOut();
+                finish();
+
+            } else {
+
+                // The profile could not be saved, so registration is NOT complete.
+                // Roll the half-created account back and report the failure.
+                rollbackRegistration();
+            }
+        });
+    }
+
+    /**
+     * Deletes the just-created (and still signed in) account so a failed profile
+     * write cannot leave an orphaned authentication user behind.
+     */
+    private void rollbackRegistration() {
+
+        Toast.makeText(
+                RegisterActivity.this,
+                R.string.err_profile_save_failed,
+                Toast.LENGTH_LONG
+        ).show();
+
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        if (user == null) {
+            finish();
+            return;
+        }
+
+        user.delete().addOnCompleteListener(deleteTask -> {
+            firebaseAuth.signOut();
+            finish();
+        });
     }
 
     private void setLoadingState(boolean loading) {

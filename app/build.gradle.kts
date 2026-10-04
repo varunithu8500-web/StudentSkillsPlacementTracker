@@ -38,6 +38,7 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.material)
     implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
     implementation(platform("com.google.firebase:firebase-bom:34.19.0"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.espresso.core)
