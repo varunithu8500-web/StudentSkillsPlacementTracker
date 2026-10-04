@@ -59,7 +59,7 @@
     <string name="student_home_label_department">Department: %1$s</string>
     <string name="student_home_label_year">Year: %1$s</string>
     <string name="student_home_label_cgpa">CGPA: %1$s</string>
-    <string name="student_home_coming_soon">Placement features are coming soon.</string>
+    <string name="student_home_coming_soon">Placement announcements are coming soon.</string>
     <string name="student_home_profile_missing">Your profile details are not available yet.</string>
     <string name="student_home_profile_error">Could not load your profile. Please check your connection and try again.</string>
 
@@ -278,4 +278,31 @@
 
     <!-- Login routing -->
     <string name="err_role_unknown">Your account role is not recognised. Please contact the placement coordinator.</string>
+
+    <!-- Student company browsing (read only) -->
+    <string name="btn_companies">Companies</string>
+    <string name="student_companies_title">Companies</string>
+    <string name="student_companies_empty">No companies have been added yet.</string>
+    <string name="student_companies_load_error">Could not load companies. Please check your connection and try again.</string>
+
+    <!-- Student company row -->
+    <string name="student_company_item_role">Role: %1$s</string>
+    <string name="student_company_item_min_cgpa">Minimum CGPA: %1$s</string>
+    <string name="student_company_item_min_projects">Minimum Projects: %1$d</string>
+    <string name="student_company_item_location">Location: %1$s</string>
+
+    <!-- Eligibility check (FR-ELG-01) -->
+    <string name="eligibility_company_role">Role: %1$s</string>
+    <string name="eligibility_result_eligible">Eligible</string>
+    <string name="eligibility_result_not_eligible">Not Eligible</string>
+    <string name="eligibility_matched_header">Matched requirements</string>
+    <string name="eligibility_missing_header">Missing requirements</string>
+    <string name="eligibility_item_cgpa">&#8226; CGPA: need %1$s, you have %2$s</string>
+    <string name="eligibility_item_skill">&#8226; Skill: %1$s</string>
+    <string name="eligibility_item_projects">&#8226; Projects: need %1$d, you have %2$d</string>
+    <string name="eligibility_none_matched">None yet.</string>
+    <string name="eligibility_none_missing">None &#8211; you meet every requirement.</string>
+    <string name="eligibility_load_error">Could not check eligibility. Please check your connection and try again.</string>
+    <string name="eligibility_company_missing">This company is no longer available.</string>
+    <string name="eligibility_profile_missing">Your profile details are not available yet, so eligibility cannot be checked.</string>
 </resources>
