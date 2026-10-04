@@ -14,6 +14,12 @@ public class Student {
     /** Role assigned to every registered student. */
     public static final String ROLE_STUDENT = "student";
 
+    /** Role that may manage company placement requirements. */
+    public static final String ROLE_COORDINATOR = "coordinator";
+
+    /** Administrative role, granted the same company management rights. */
+    public static final String ROLE_ADMIN = "admin";
+
     private String uid;
     private String name;
     private String email;
