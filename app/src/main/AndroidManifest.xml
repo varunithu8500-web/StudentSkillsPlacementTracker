@@ -83,6 +83,9 @@
         <activity
             android:name=".StudentAnnouncementsActivity"
             android:exported="false" />
+        <activity
+            android:name=".ReadinessActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

@@ -138,6 +138,13 @@
             android:text="@string/btn_announcements" />
 
         <Button
+            android:id="@+id/readinessButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="@string/btn_placement_readiness" />
+
+        <Button
             android:id="@+id/logoutButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

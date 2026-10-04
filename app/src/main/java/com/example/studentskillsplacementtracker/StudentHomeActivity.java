@@ -43,6 +43,7 @@ public class StudentHomeActivity extends AppCompatActivity {
     private Button codingButton;
     private Button companiesButton;
     private Button announcementsButton;
+    private Button readinessButton;
     private Button logoutButton;
 
     // Email of the signed-in account, used as a fallback welcome value.
@@ -81,6 +82,7 @@ public class StudentHomeActivity extends AppCompatActivity {
         codingButton = findViewById(R.id.codingButton);
         companiesButton = findViewById(R.id.companiesButton);
         announcementsButton = findViewById(R.id.announcementsButton);
+        readinessButton = findViewById(R.id.readinessButton);
         logoutButton = findViewById(R.id.logoutButton);
 
         // Welcome the authenticated user right away; refined once the profile loads
@@ -110,6 +112,10 @@ public class StudentHomeActivity extends AppCompatActivity {
         // View placement announcements
         announcementsButton.setOnClickListener(view ->
                 startActivity(new Intent(StudentHomeActivity.this, StudentAnnouncementsActivity.class)));
+
+        // Open the placement readiness dashboard
+        readinessButton.setOnClickListener(view ->
+                startActivity(new Intent(StudentHomeActivity.this, ReadinessActivity.class)));
 
         // Logout button click
         logoutButton.setOnClickListener(view -> logout());

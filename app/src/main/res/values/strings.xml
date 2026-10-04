@@ -353,4 +353,22 @@
     <string name="eligibility_load_error">Could not check eligibility. Please check your connection and try again.</string>
     <string name="eligibility_company_missing">This company is no longer available.</string>
     <string name="eligibility_profile_missing">Your profile details are not available yet, so eligibility cannot be checked.</string>
+
+    <!-- Placement readiness dashboard (FR-PRS-01) -->
+    <string name="btn_placement_readiness">Placement Readiness</string>
+    <string name="readiness_title">Placement Readiness</string>
+    <string name="readiness_score_label">Readiness score: %1$d / 100</string>
+    <string name="readiness_disclaimer">This readiness score is an app-defined progress indicator only. It is not a prediction or probability of placement.</string>
+    <string name="readiness_summary_header">Summary</string>
+    <string name="readiness_profile_completion">Profile completion: %1$d%%</string>
+    <string name="readiness_skills">Skills: %1$d (target %2$d)</string>
+    <string name="readiness_projects">Projects: %1$d (target %2$d)</string>
+    <string name="readiness_certifications">Certifications: %1$d (target %2$d)</string>
+    <string name="readiness_coding">Coding problems solved: %1$d (Easy %2$d / Medium %3$d / Hard %4$d)</string>
+    <string name="readiness_eligibility">Eligible for %1$d of %2$d companies (%3$d%%)</string>
+    <string name="readiness_no_companies">No companies have been published yet, so eligibility progress is not included in the score.</string>
+    <string name="readiness_method_header">How this is calculated</string>
+    <string name="readiness_method_body">The score is the equal average of five components, each worth 20%%: skills (target %1$d), projects (target %2$d), certifications (target %3$d), coding problems solved (target %4$d) and eligibility progress across published companies. Each component is capped at 100%%. When no companies have been published yet, eligibility is left out of the average.</string>
+    <string name="readiness_profile_missing">Your profile details are not available yet, so readiness cannot be calculated.</string>
+    <string name="readiness_load_error">Could not calculate readiness. Please check your connection and try again.</string>
 </resources>
