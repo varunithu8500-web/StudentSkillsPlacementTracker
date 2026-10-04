@@ -29,6 +29,13 @@
         <activity
             android:name=".StudentHomeActivity"
             android:exported="false" />
+        <activity
+            android:name=".SkillsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddEditSkillActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>

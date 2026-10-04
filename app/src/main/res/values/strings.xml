@@ -59,10 +59,51 @@
     <string name="student_home_label_department">Department: %1$s</string>
     <string name="student_home_label_year">Year: %1$s</string>
     <string name="student_home_label_cgpa">CGPA: %1$s</string>
-    <string name="student_home_coming_soon">Skills, projects, certifications and placement features are coming soon.</string>
+    <string name="student_home_coming_soon">Projects, certifications and placement features are coming soon.</string>
     <string name="student_home_profile_missing">Your profile details are not available yet.</string>
     <string name="student_home_profile_error">Could not load your profile. Please check your connection and try again.</string>
 
     <!-- Profile persistence -->
     <string name="err_profile_save_failed">We could not complete your registration. Please try again.</string>
+
+    <!-- Skills (FR-SKL-01) -->
+    <string name="btn_my_skills">My Skills</string>
+    <string name="skills_title">My Skills</string>
+    <string name="btn_add_skill">Add Skill</string>
+    <string name="skills_empty">You have not added any skills yet.</string>
+    <string name="skills_load_error">Could not load your skills. Please check your connection and try again.</string>
+    <string name="btn_edit">Edit</string>
+    <string name="btn_delete">Delete</string>
+
+    <!-- Add / edit skill form -->
+    <string name="skill_add_title">Add Skill</string>
+    <string name="skill_edit_title">Edit Skill</string>
+    <string name="hint_skill_name">Skill Name</string>
+    <string name="hint_skill_proficiency">Proficiency (1 - 5)</string>
+    <string name="hint_skill_progress">Progress (0 - 100)</string>
+    <string name="btn_save">Save</string>
+    <string name="btn_cancel">Cancel</string>
+
+    <!-- Skill list item -->
+    <string name="skill_item_proficiency">Proficiency: %1$d / 5</string>
+    <string name="skill_item_progress">Progress: %1$d%%</string>
+
+    <!-- Skill validation messages -->
+    <string name="err_skill_name_required">Please enter a skill name</string>
+    <string name="err_skill_proficiency_required">Please enter a proficiency level</string>
+    <string name="err_skill_proficiency_invalid">Proficiency must be a whole number between 1 and 5</string>
+    <string name="err_skill_progress_required">Please enter your progress</string>
+    <string name="err_skill_progress_invalid">Progress must be a whole number between 0 and 100</string>
+
+    <!-- Skill result messages -->
+    <string name="msg_skill_added">Skill added</string>
+    <string name="msg_skill_updated">Skill updated</string>
+    <string name="msg_skill_deleted">Skill deleted</string>
+    <string name="err_skill_save_failed">Could not save the skill. Please check your connection and try again.</string>
+    <string name="err_skill_delete_failed">Could not delete the skill. Please check your connection and try again.</string>
+    <string name="err_skill_load_failed">Could not load the skill. Please check your connection and try again.</string>
+
+    <!-- Delete skill confirmation -->
+    <string name="dialog_delete_skill_title">Delete this skill?</string>
+    <string name="dialog_delete_skill_message">This skill will be removed from your profile.</string>
 </resources>
