@@ -43,6 +43,13 @@
             android:name=".AddEditProjectActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".CertificationsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddEditCertificationActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>
