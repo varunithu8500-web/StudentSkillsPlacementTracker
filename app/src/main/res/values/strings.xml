@@ -146,4 +146,41 @@
     <!-- Delete project confirmation -->
     <string name="dialog_delete_project_title">Delete this project?</string>
     <string name="dialog_delete_project_message">This project will be removed from your profile.</string>
+
+    <!-- Certifications -->
+    <string name="btn_my_certifications">My Certifications</string>
+    <string name="certifications_title">My Certifications</string>
+    <string name="btn_add_certification">Add Certification</string>
+    <string name="certifications_empty">You have not added any certifications yet.</string>
+    <string name="certifications_load_error">Could not load your certifications. Please check your connection and try again.</string>
+
+    <!-- Add / edit certification form -->
+    <string name="certification_add_title">Add Certification</string>
+    <string name="certification_edit_title">Edit Certification</string>
+    <string name="hint_certification_name">Certification Name</string>
+    <string name="hint_certification_organization">Organization</string>
+    <string name="hint_certification_date">Date</string>
+    <string name="hint_certification_credential">Credential (optional)</string>
+
+    <!-- Certification list item -->
+    <string name="certification_item_organization">Organization: %1$s</string>
+    <string name="certification_item_date">Date: %1$s</string>
+    <string name="certification_item_credential">Credential: %1$s</string>
+
+    <!-- Certification validation messages -->
+    <string name="err_certification_name_required">Please enter the certification name</string>
+    <string name="err_certification_organization_required">Please enter the organization</string>
+    <string name="err_certification_date_required">Please select the certification date</string>
+
+    <!-- Certification result messages -->
+    <string name="msg_certification_added">Certification added</string>
+    <string name="msg_certification_updated">Certification updated</string>
+    <string name="msg_certification_deleted">Certification deleted</string>
+    <string name="err_certification_save_failed">Could not save the certification. Please check your connection and try again.</string>
+    <string name="err_certification_delete_failed">Could not delete the certification. Please check your connection and try again.</string>
+    <string name="err_certification_load_failed">Could not load the certification. Please check your connection and try again.</string>
+
+    <!-- Delete certification confirmation -->
+    <string name="dialog_delete_certification_title">Delete this certification?</string>
+    <string name="dialog_delete_certification_message">This certification will be removed from your profile.</string>
 </resources>

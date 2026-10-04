@@ -117,6 +117,13 @@
             android:text="@string/btn_my_projects" />
 
         <Button
+            android:id="@+id/certificationsButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="@string/btn_my_certifications" />
+
+        <Button
             android:id="@+id/logoutButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
