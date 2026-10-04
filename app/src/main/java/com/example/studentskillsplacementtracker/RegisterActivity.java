@@ -11,12 +11,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.FirebaseNetworkException;
+import com.example.studentskillsplacementtracker.util.AuthErrorMapper;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 
 /**
  * Student registration screen.
@@ -203,14 +199,21 @@ public class RegisterActivity extends AppCompatActivity {
                                 Toast.LENGTH_LONG
                         ).show();
 
-                        // Back to MainActivity (login). No Firestore document yet.
+                        // Firebase signs the new account in automatically. Sign out
+                        // again so the user returns to MainActivity/Login and logs in
+                        // explicitly. No Firestore document is written yet.
+                        firebaseAuth.signOut();
+
                         finish();
 
                     } else {
 
                         Toast.makeText(
                                 RegisterActivity.this,
-                                resolveErrorMessage(task.getException()),
+                                AuthErrorMapper.getMessage(
+                                        RegisterActivity.this,
+                                        task.getException()
+                                ),
                                 Toast.LENGTH_LONG
                         ).show();
                     }
@@ -222,40 +225,5 @@ public class RegisterActivity extends AppCompatActivity {
         registerProgressBar.setVisibility(loading ? View.VISIBLE : View.GONE);
         registerButton.setEnabled(!loading);
         loginLinkTextView.setEnabled(!loading);
-    }
-
-    /**
-     * Maps Firebase failures to user friendly messages. Raw exception messages
-     * are never shown to the user.
-     */
-    private String resolveErrorMessage(Exception exception) {
-
-        if (exception instanceof FirebaseAuthWeakPasswordException) {
-            return getString(R.string.err_weak_password);
-        }
-
-        if (exception instanceof FirebaseAuthUserCollisionException) {
-            return getString(R.string.err_email_in_use);
-        }
-
-        if (exception instanceof FirebaseAuthInvalidCredentialsException) {
-            return getString(R.string.err_email_invalid);
-        }
-
-        if (exception instanceof FirebaseNetworkException) {
-            return getString(R.string.err_network);
-        }
-
-        if (exception instanceof FirebaseAuthException) {
-            String errorCode = ((FirebaseAuthException) exception).getErrorCode();
-            if ("ERROR_OPERATION_NOT_ALLOWED".equals(errorCode)) {
-                return getString(R.string.err_operation_not_allowed);
-            }
-            if ("ERROR_TOO_MANY_REQUESTS".equals(errorCode)) {
-                return getString(R.string.err_too_many_requests);
-            }
-        }
-
-        return getString(R.string.err_registration_failed);
     }
 }

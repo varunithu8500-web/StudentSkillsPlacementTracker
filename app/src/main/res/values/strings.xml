@@ -35,4 +35,20 @@
     <string name="err_operation_not_allowed">Email and password sign-up is not available right now.</string>
     <string name="err_network">Network error. Please check your connection and try again.</string>
     <string name="err_too_many_requests">Too many attempts. Please try again later.</string>
+
+    <!-- Login -->
+    <string name="msg_login_success">Login successful</string>
+    <string name="btn_login">Login</string>
+    <string name="link_register">New student? Register</string>
+
+    <!-- Login authentication error messages -->
+    <string name="err_invalid_credentials">Invalid email or password.</string>
+    <string name="err_user_disabled">This account has been disabled.</string>
+    <string name="err_auth_generic">Authentication failed. Please try again.</string>
+
+    <!-- Student home -->
+    <string name="student_home_title">Student Home</string>
+    <string name="student_home_welcome">Welcome, %1$s</string>
+    <string name="student_home_welcome_unknown">Welcome</string>
+    <string name="btn_logout">Logout</string>
 </resources>
