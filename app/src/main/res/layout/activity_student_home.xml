@@ -95,13 +95,6 @@
 
         </LinearLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/student_home_coming_soon"
-            android:textSize="14sp"
-            android:layout_marginBottom="24dp" />
-
         <Button
             android:id="@+id/skillsButton"
             android:layout_width="match_parent"
@@ -136,6 +129,13 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:text="@string/btn_companies" />
+
+        <Button
+            android:id="@+id/announcementsButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="@string/btn_announcements" />
 
         <Button
             android:id="@+id/logoutButton"

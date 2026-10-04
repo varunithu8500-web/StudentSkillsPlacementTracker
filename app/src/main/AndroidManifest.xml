@@ -73,6 +73,16 @@
         <activity
             android:name=".EligibilityActivity"
             android:exported="false" />
+        <activity
+            android:name=".AnnouncementsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddEditAnnouncementActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".StudentAnnouncementsActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

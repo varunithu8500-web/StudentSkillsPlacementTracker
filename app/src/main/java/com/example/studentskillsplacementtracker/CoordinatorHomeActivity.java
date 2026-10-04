@@ -23,6 +23,7 @@ public class CoordinatorHomeActivity extends AppCompatActivity {
 
     private TextView welcomeTextView;
     private Button manageCompaniesButton;
+    private Button manageAnnouncementsButton;
     private Button logoutButton;
 
     @Override
@@ -44,6 +45,7 @@ public class CoordinatorHomeActivity extends AppCompatActivity {
         // Connect XML components with Java
         welcomeTextView = findViewById(R.id.coordinatorWelcomeTextView);
         manageCompaniesButton = findViewById(R.id.manageCompaniesButton);
+        manageAnnouncementsButton = findViewById(R.id.manageAnnouncementsButton);
         logoutButton = findViewById(R.id.logoutButton);
 
         // Welcome the coordinator using the signed in account email
@@ -57,6 +59,10 @@ public class CoordinatorHomeActivity extends AppCompatActivity {
         // Open the company management list
         manageCompaniesButton.setOnClickListener(view ->
                 startActivity(new Intent(CoordinatorHomeActivity.this, CompaniesActivity.class)));
+
+        // Open the announcement management list
+        manageAnnouncementsButton.setOnClickListener(view ->
+                startActivity(new Intent(CoordinatorHomeActivity.this, AnnouncementsActivity.class)));
 
         // Logout button click
         logoutButton.setOnClickListener(view -> logout());
