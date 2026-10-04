@@ -131,6 +131,13 @@
             android:text="@string/btn_my_coding" />
 
         <Button
+            android:id="@+id/companiesButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="@string/btn_companies" />
+
+        <Button
             android:id="@+id/logoutButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

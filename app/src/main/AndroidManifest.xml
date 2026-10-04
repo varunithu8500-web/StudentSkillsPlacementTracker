@@ -67,6 +67,12 @@
             android:name=".AddEditCompanyActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".StudentCompaniesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EligibilityActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
