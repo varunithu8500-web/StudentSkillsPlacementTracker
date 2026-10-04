@@ -59,7 +59,6 @@
     <string name="student_home_label_department">Department: %1$s</string>
     <string name="student_home_label_year">Year: %1$s</string>
     <string name="student_home_label_cgpa">CGPA: %1$s</string>
-    <string name="student_home_coming_soon">Placement announcements are coming soon.</string>
     <string name="student_home_profile_missing">Your profile details are not available yet.</string>
     <string name="student_home_profile_error">Could not load your profile. Please check your connection and try again.</string>
 
@@ -275,6 +274,55 @@
     <!-- Delete company confirmation -->
     <string name="dialog_delete_company_title">Delete this company?</string>
     <string name="dialog_delete_company_message">This company requirement will be removed.</string>
+
+    <!-- Placement announcements (FR-ANN-01, FR-ADM-01) -->
+    <string name="announcements_title">Announcements</string>
+    <string name="btn_manage_announcements">Manage Announcements</string>
+    <string name="btn_add_announcement">Add Announcement</string>
+    <string name="announcements_empty">No announcements have been published yet.</string>
+    <string name="announcements_load_error">Could not load announcements. Please check your connection and try again.</string>
+
+    <!-- Add / edit announcement form -->
+    <string name="announcement_add_title">Add Announcement</string>
+    <string name="announcement_edit_title">Edit Announcement</string>
+    <string name="hint_announcement_title">Title</string>
+    <string name="hint_announcement_description">Description</string>
+    <string name="hint_announcement_company">Company / Drive</string>
+    <string name="hint_announcement_date">Date</string>
+
+    <!-- Announcement list item -->
+    <string name="announcement_item_company">Company / Drive: %1$s</string>
+    <string name="announcement_item_date">Date: %1$s</string>
+    <string name="announcement_item_description">Description: %1$s</string>
+
+    <!-- Announcement validation messages -->
+    <string name="err_announcement_title_required">Please enter the announcement title</string>
+    <string name="err_announcement_description_required">Please enter the announcement description</string>
+    <string name="err_announcement_company_required">Please enter the company or drive</string>
+    <string name="err_announcement_date_required">Please select the announcement date</string>
+
+    <!-- Announcement result messages -->
+    <string name="msg_announcement_added">Announcement published</string>
+    <string name="msg_announcement_updated">Announcement updated</string>
+    <string name="msg_announcement_deleted">Announcement deleted</string>
+    <string name="err_announcement_save_failed">Could not save the announcement. Please check your connection and try again.</string>
+    <string name="err_announcement_delete_failed">Could not delete the announcement. Please check your connection and try again.</string>
+    <string name="err_announcement_load_failed">Could not load the announcement. Please check your connection and try again.</string>
+
+    <!-- Delete announcement confirmation -->
+    <string name="dialog_delete_announcement_title">Delete this announcement?</string>
+    <string name="dialog_delete_announcement_message">This announcement will be removed for all students.</string>
+
+    <!-- Student placement announcements (read only) -->
+    <string name="btn_announcements">Announcements</string>
+    <string name="student_announcements_title">Announcements</string>
+    <string name="student_announcements_empty">No announcements have been published yet.</string>
+    <string name="student_announcements_load_error">Could not load announcements. Please check your connection and try again.</string>
+
+    <!-- Student announcement row -->
+    <string name="student_announcement_item_company">Company / Drive: %1$s</string>
+    <string name="student_announcement_item_date">Date: %1$s</string>
+    <string name="student_announcement_item_description">Description: %1$s</string>
 
     <!-- Login routing -->
     <string name="err_role_unknown">Your account role is not recognised. Please contact the placement coordinator.</string>
