@@ -26,21 +26,12 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Eligibility result screen for one company (FR-ELG-01).
- *
- * Reads the company requirements and the student's own profile, skills and
- * projects, then hands them to {@link EligibilityEvaluator}. The comparison
- * itself lives in that pure utility class; this screen only loads data and
- * renders the outcome.
- */
 public class EligibilityActivity extends AppCompatActivity {
 
-    /** Extra carrying the id of the company being checked. */
     public static final String EXTRA_COMPANY_ID = "extra_company_id";
 
-    /** Independent reads required before the comparison can run. */
     private static final int REQUIRED_READS = 4;
 
     private FirebaseAuth firebaseAuth;
@@ -58,39 +49,31 @@ public class EligibilityActivity extends AppCompatActivity {
     private TextView eligibilityMatchedTextView;
     private TextView eligibilityMissingTextView;
 
-    /** UID of the authenticated student. Always read from FirebaseAuth. */
     private String uid;
-
-    /** Id of the company being checked, read from the Intent. */
     private String companyId;
 
-    // Values collected from the four reads before evaluating
     private Company company;
     private Student student;
     private List<Skill> skills;
     private List<Project> projects;
 
-    private int readsRemaining;
-    private boolean readFailed;
+    private AtomicInteger readsRemaining = new AtomicInteger(0);
+    private volatile boolean readFailed;
+    private long currentLoadId = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Get Firebase Authentication instance
         firebaseAuth = FirebaseAuth.getInstance();
-
-        // Navigation guard: this screen must never be shown without a session
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+
         if (currentUser == null) {
             goToLogin();
             return;
         }
 
-        // Ownership always comes from the authenticated user, never an Intent
         uid = currentUser.getUid();
-
-        // Only the company id travels through the Intent
         companyId = getIntent().getStringExtra(EXTRA_COMPANY_ID);
 
         companyRepository = new CompanyRepository();
@@ -100,15 +83,21 @@ public class EligibilityActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_eligibility);
 
-        // Connect XML components with Java
-        eligibilityCompanyNameTextView = findViewById(R.id.eligibilityCompanyNameTextView);
-        eligibilityCompanyRoleTextView = findViewById(R.id.eligibilityCompanyRoleTextView);
+        eligibilityCompanyNameTextView =
+                findViewById(R.id.eligibilityCompanyNameTextView);
+        eligibilityCompanyRoleTextView =
+                findViewById(R.id.eligibilityCompanyRoleTextView);
         eligibilityProgressBar = findViewById(R.id.eligibilityProgressBar);
-        eligibilityMessageTextView = findViewById(R.id.eligibilityMessageTextView);
-        eligibilityResultsContainer = findViewById(R.id.eligibilityResultsContainer);
-        eligibilityResultTextView = findViewById(R.id.eligibilityResultTextView);
-        eligibilityMatchedTextView = findViewById(R.id.eligibilityMatchedTextView);
-        eligibilityMissingTextView = findViewById(R.id.eligibilityMissingTextView);
+        eligibilityMessageTextView =
+                findViewById(R.id.eligibilityMessageTextView);
+        eligibilityResultsContainer =
+                findViewById(R.id.eligibilityResultsContainer);
+        eligibilityResultTextView =
+                findViewById(R.id.eligibilityResultTextView);
+        eligibilityMatchedTextView =
+                findViewById(R.id.eligibilityMatchedTextView);
+        eligibilityMissingTextView =
+                findViewById(R.id.eligibilityMissingTextView);
 
         if (companyId == null || companyId.isEmpty()) {
             showMessage(R.string.eligibility_company_missing);
@@ -118,75 +107,96 @@ public class EligibilityActivity extends AppCompatActivity {
         loadEligibility();
     }
 
-    /**
-     * Starts the four independent reads. They run in parallel and the
-     * comparison only runs once all four have completed successfully.
-     */
     private void loadEligibility() {
-
         showLoadingState();
 
-        readsRemaining = REQUIRED_READS;
+        final long loadId = ++currentLoadId;
+        final AtomicInteger remaining = new AtomicInteger(REQUIRED_READS);
+
+        readsRemaining = remaining;
         readFailed = false;
+
         company = null;
         student = null;
         skills = null;
         projects = null;
 
-        companyRepository.getCompany(companyId,
+        companyRepository.getCompany(
+                companyId,
                 value -> {
+                    if (!isCurrentLoad(loadId)) {
+                        return;
+                    }
+
                     company = value;
-                    onReadComplete();
+                    onReadComplete(loadId, remaining);
                 },
-                exception -> onReadFailed());
+                exception -> onReadFailed(loadId)
+        );
 
-        studentRepository.getProfile(uid,
+        studentRepository.getProfile(
+                uid,
                 value -> {
+                    if (!isCurrentLoad(loadId)) {
+                        return;
+                    }
+
                     student = value;
-                    onReadComplete();
+                    onReadComplete(loadId, remaining);
                 },
-                exception -> onReadFailed());
+                exception -> onReadFailed(loadId)
+        );
 
-        skillRepository.listSkills(uid,
+        skillRepository.listSkills(
+                uid,
                 value -> {
+                    if (!isCurrentLoad(loadId)) {
+                        return;
+                    }
+
                     skills = value;
-                    onReadComplete();
+                    onReadComplete(loadId, remaining);
                 },
-                exception -> onReadFailed());
+                exception -> onReadFailed(loadId)
+        );
 
-        projectRepository.getProjects(uid,
+        projectRepository.getProjects(
+                uid,
                 value -> {
+                    if (!isCurrentLoad(loadId)) {
+                        return;
+                    }
+
                     projects = value;
-                    onReadComplete();
+                    onReadComplete(loadId, remaining);
                 },
-                exception -> onReadFailed());
+                exception -> onReadFailed(loadId)
+        );
     }
 
-    /**
-     * Counts down the pending reads and evaluates once they are all in.
-     */
-    private void onReadComplete() {
+    private boolean isCurrentLoad(long loadId) {
+        return loadId == currentLoadId
+                && !isFinishing()
+                && !isDestroyed();
+    }
 
-        if (readFailed) {
+    private void onReadComplete(
+            long loadId,
+            AtomicInteger remaining) {
+
+        if (!isCurrentLoad(loadId) || readFailed) {
             return;
         }
 
-        readsRemaining--;
+        int pending = remaining.decrementAndGet();
 
-        if (readsRemaining > 0) {
-            return;
+        if (pending == 0) {
+            evaluateAndRender();
         }
-
-        evaluateAndRender();
     }
 
-    /**
-     * A failed read must never be reported as "Not Eligible", so the first
-     * failure stops the check and reports a load error instead.
-     */
-    private void onReadFailed() {
-
-        if (readFailed) {
+    private void onReadFailed(long loadId) {
+        if (!isCurrentLoad(loadId) || readFailed) {
             return;
         }
 
@@ -194,12 +204,7 @@ public class EligibilityActivity extends AppCompatActivity {
         showMessage(R.string.eligibility_load_error);
     }
 
-    /**
-     * Runs the deterministic comparison and renders the outcome. Missing data is
-     * reported as a data error rather than a negative result.
-     */
     private void evaluateAndRender() {
-
         if (company == null) {
             showMessage(R.string.eligibility_company_missing);
             return;
@@ -210,8 +215,11 @@ public class EligibilityActivity extends AppCompatActivity {
             return;
         }
 
-        List<Skill> studentSkills = (skills == null) ? new ArrayList<>() : skills;
-        List<Project> studentProjects = (projects == null) ? new ArrayList<>() : projects;
+        List<Skill> studentSkills =
+                skills == null ? new ArrayList<>() : skills;
+
+        List<Project> studentProjects =
+                projects == null ? new ArrayList<>() : projects;
 
         EligibilityResult result = EligibilityEvaluator.evaluate(
                 company,
@@ -223,38 +231,41 @@ public class EligibilityActivity extends AppCompatActivity {
         bindResult(result);
     }
 
-    /**
-     * Renders the comparison outcome.
-     */
     private void bindResult(EligibilityResult result) {
-
         eligibilityProgressBar.setVisibility(View.GONE);
         eligibilityMessageTextView.setVisibility(View.GONE);
         eligibilityResultsContainer.setVisibility(View.VISIBLE);
 
         eligibilityCompanyNameTextView.setText(company.getCompanyName());
+
         eligibilityCompanyRoleTextView.setText(
-                getString(R.string.eligibility_company_role, safe(company.getRole()))
+                getString(
+                        R.string.eligibility_company_role,
+                        safe(company.getRole())
+                )
         );
 
-        eligibilityResultTextView.setText(result.isEligible()
-                ? R.string.eligibility_result_eligible
-                : R.string.eligibility_result_not_eligible);
+        eligibilityResultTextView.setText(
+                result.isEligible()
+                        ? R.string.eligibility_result_eligible
+                        : R.string.eligibility_result_not_eligible
+        );
 
-        eligibilityMatchedTextView.setText(buildRequirementText(result, true));
-        eligibilityMissingTextView.setText(buildRequirementText(result, false));
+        eligibilityMatchedTextView.setText(
+                buildRequirementText(result, true)
+        );
+
+        eligibilityMissingTextView.setText(
+                buildRequirementText(result, false)
+        );
     }
 
-    /**
-     * Builds the bullet list for one section. The CGPA line, every skill and the
-     * project line appear either as matched or as missing depending on the
-     * result, so the same formatting is reused for both sections.
-     */
-    private String buildRequirementText(EligibilityResult result, boolean matchedSection) {
+    private String buildRequirementText(
+            EligibilityResult result,
+            boolean matchedSection) {
 
         List<String> lines = new ArrayList<>();
 
-        // CGPA
         if (result.isCgpaMet() == matchedSection) {
             lines.add(getString(
                     R.string.eligibility_item_cgpa,
@@ -263,16 +274,17 @@ public class EligibilityActivity extends AppCompatActivity {
             ));
         }
 
-        // Skills
         List<String> sectionSkills = matchedSection
                 ? result.getMatchedSkills()
                 : result.getMissingSkills();
 
         for (String skill : sectionSkills) {
-            lines.add(getString(R.string.eligibility_item_skill, skill));
+            lines.add(getString(
+                    R.string.eligibility_item_skill,
+                    skill
+            ));
         }
 
-        // Projects
         if (result.isProjectsMet() == matchedSection) {
             lines.add(getString(
                     R.string.eligibility_item_projects,
@@ -282,17 +294,16 @@ public class EligibilityActivity extends AppCompatActivity {
         }
 
         if (lines.isEmpty()) {
-            return getString(matchedSection
-                    ? R.string.eligibility_none_matched
-                    : R.string.eligibility_none_missing);
+            return getString(
+                    matchedSection
+                            ? R.string.eligibility_none_matched
+                            : R.string.eligibility_none_missing
+            );
         }
 
         return TextUtils.join("\n", lines);
     }
 
-    /**
-     * Formats a CGPA with two decimal places for display.
-     */
     private String formatCgpa(double value) {
         return String.format(Locale.getDefault(), "%.2f", value);
     }
@@ -315,8 +326,16 @@ public class EligibilityActivity extends AppCompatActivity {
     }
 
     private void goToLogin() {
-        Intent intent = new Intent(EligibilityActivity.this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        Intent intent = new Intent(
+                EligibilityActivity.this,
+                MainActivity.class
+        );
+
+        intent.addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_CLEAR_TASK
+        );
+
         startActivity(intent);
         finish();
     }

@@ -28,22 +28,10 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Placement readiness dashboard for the signed in student (FR-PRS-01).
- *
- * Summarizes the student's skills, projects, certifications, coding practice and
- * eligibility progress, and shows an app-defined readiness score. The score is a
- * progress indicator only - it is not a probability of placement and not a
- * recruitment prediction.
- *
- * The screen is read only: it reuses the existing repositories, collects the data
- * with six parallel reads and hands it to {@link ReadinessCalculator}. Nothing is
- * written and nothing is persisted.
- */
 public class ReadinessActivity extends AppCompatActivity {
 
-    /** Independent reads required before the summary can be calculated. */
     private static final int REQUIRED_READS = 6;
 
     private FirebaseAuth firebaseAuth;
@@ -73,10 +61,8 @@ public class ReadinessActivity extends AppCompatActivity {
     private ProgressBar readinessEligibilityProgressBar;
     private TextView readinessMethodTextView;
 
-    /** UID of the authenticated student. Always read from FirebaseAuth. */
     private String uid;
 
-    // Values collected from the six reads before calculating
     private Student student;
     private List<Skill> skills;
     private List<Project> projects;
@@ -84,24 +70,22 @@ public class ReadinessActivity extends AppCompatActivity {
     private List<CodingStats> codingStatsList;
     private List<Company> companies;
 
-    private int readsRemaining;
-    private boolean readFailed;
+    private AtomicInteger readsRemaining = new AtomicInteger(0);
+    private long currentLoadId = 0;
+    private boolean readFailed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Get Firebase Authentication instance
         firebaseAuth = FirebaseAuth.getInstance();
-
-        // Navigation guard: this screen must never be shown without a session
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+
         if (currentUser == null) {
             goToLogin();
             return;
         }
 
-        // Ownership always comes from the authenticated user, never an Intent
         uid = currentUser.getUid();
 
         studentRepository = new StudentRepository();
@@ -113,7 +97,6 @@ public class ReadinessActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_readiness);
 
-        // Connect XML components with Java
         readinessProgressBar = findViewById(R.id.readinessProgressBar);
         readinessMessageTextView = findViewById(R.id.readinessMessageTextView);
         readinessResultsContainer = findViewById(R.id.readinessResultsContainer);
@@ -125,13 +108,15 @@ public class ReadinessActivity extends AppCompatActivity {
         readinessSkillsProgressBar = findViewById(R.id.readinessSkillsProgressBar);
         readinessProjectsTextView = findViewById(R.id.readinessProjectsTextView);
         readinessProjectsProgressBar = findViewById(R.id.readinessProjectsProgressBar);
-        readinessCertificationsTextView = findViewById(R.id.readinessCertificationsTextView);
+        readinessCertificationsTextView =
+                findViewById(R.id.readinessCertificationsTextView);
         readinessCertificationsProgressBar =
                 findViewById(R.id.readinessCertificationsProgressBar);
         readinessCodingTextView = findViewById(R.id.readinessCodingTextView);
         readinessCodingProgressBar = findViewById(R.id.readinessCodingProgressBar);
         readinessEligibilityTextView = findViewById(R.id.readinessEligibilityTextView);
-        readinessEligibilityProgressBar = findViewById(R.id.readinessEligibilityProgressBar);
+        readinessEligibilityProgressBar =
+                findViewById(R.id.readinessEligibilityProgressBar);
         readinessMethodTextView = findViewById(R.id.readinessMethodTextView);
     }
 
@@ -139,24 +124,21 @@ public class ReadinessActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        // Reload every time the screen becomes visible again, so the summary is
-        // always current. The results container is null when the session guard
-        // already sent the user back to login.
         if (readinessResultsContainer != null) {
             loadReadiness();
         }
     }
 
-    /**
-     * Starts the six independent reads. They run in parallel and the summary is
-     * only calculated once all six have completed successfully.
-     */
     private void loadReadiness() {
-
         showLoadingState();
 
-        readsRemaining = REQUIRED_READS;
+        // Every load gets a new identifier. Older callbacks become obsolete.
+        final long loadId = ++currentLoadId;
+        final AtomicInteger remaining = new AtomicInteger(REQUIRED_READS);
+
+        readsRemaining = remaining;
         readFailed = false;
+
         student = null;
         skills = null;
         projects = null;
@@ -164,75 +146,96 @@ public class ReadinessActivity extends AppCompatActivity {
         codingStatsList = null;
         companies = null;
 
-        studentRepository.getProfile(uid,
+        studentRepository.getProfile(
+                uid,
                 value -> {
+                    if (!isCurrentLoad(loadId)) {
+                        return;
+                    }
                     student = value;
-                    onReadComplete();
+                    onReadComplete(loadId, remaining);
                 },
-                exception -> onReadFailed());
+                exception -> onReadFailed(loadId)
+        );
 
-        skillRepository.listSkills(uid,
+        skillRepository.listSkills(
+                uid,
                 value -> {
+                    if (!isCurrentLoad(loadId)) {
+                        return;
+                    }
                     skills = value;
-                    onReadComplete();
+                    onReadComplete(loadId, remaining);
                 },
-                exception -> onReadFailed());
+                exception -> onReadFailed(loadId)
+        );
 
-        projectRepository.getProjects(uid,
+        projectRepository.getProjects(
+                uid,
                 value -> {
+                    if (!isCurrentLoad(loadId)) {
+                        return;
+                    }
                     projects = value;
-                    onReadComplete();
+                    onReadComplete(loadId, remaining);
                 },
-                exception -> onReadFailed());
+                exception -> onReadFailed(loadId)
+        );
 
-        certificationRepository.getCertifications(uid,
+        certificationRepository.getCertifications(
+                uid,
                 value -> {
+                    if (!isCurrentLoad(loadId)) {
+                        return;
+                    }
                     certifications = value;
-                    onReadComplete();
+                    onReadComplete(loadId, remaining);
                 },
-                exception -> onReadFailed());
+                exception -> onReadFailed(loadId)
+        );
 
-        codingStatsRepository.getCodingStats(uid,
+        codingStatsRepository.getCodingStats(
+                uid,
                 value -> {
+                    if (!isCurrentLoad(loadId)) {
+                        return;
+                    }
                     codingStatsList = value;
-                    onReadComplete();
+                    onReadComplete(loadId, remaining);
                 },
-                exception -> onReadFailed());
+                exception -> onReadFailed(loadId)
+        );
 
         companyRepository.getCompanies(
                 value -> {
+                    if (!isCurrentLoad(loadId)) {
+                        return;
+                    }
                     companies = value;
-                    onReadComplete();
+                    onReadComplete(loadId, remaining);
                 },
-                exception -> onReadFailed());
+                exception -> onReadFailed(loadId)
+        );
     }
 
-    /**
-     * Counts down the pending reads and calculates the summary once they are all
-     * in.
-     */
-    private void onReadComplete() {
+    private boolean isCurrentLoad(long loadId) {
+        return loadId == currentLoadId && !isFinishing() && !isDestroyed();
+    }
 
-        if (readFailed) {
+    private void onReadComplete(long loadId, AtomicInteger remaining) {
+        if (!isCurrentLoad(loadId) || readFailed) {
             return;
         }
 
-        readsRemaining--;
+        int pending = remaining.decrementAndGet();
 
-        if (readsRemaining > 0) {
-            return;
+        if (pending == 0) {
+            renderSummary();
         }
-
-        renderSummary();
     }
 
-    /**
-     * A failed read must never produce a partial score, so the first failure stops
-     * the calculation and reports a load error instead.
-     */
-    private void onReadFailed() {
-
-        if (readFailed) {
+    private void onReadFailed(long loadId) {
+        if (!isCurrentLoad(loadId) || readFailed) {
             return;
         }
 
@@ -240,24 +243,22 @@ public class ReadinessActivity extends AppCompatActivity {
         showMessage(R.string.readiness_load_error);
     }
 
-    /**
-     * Calculates and renders the summary. A missing profile document is reported
-     * as a data error and no score is shown at all.
-     */
     private void renderSummary() {
-
         if (student == null) {
             showMessage(R.string.readiness_profile_missing);
             return;
         }
 
-        List<Skill> studentSkills = (skills == null) ? new ArrayList<>() : skills;
-        List<Project> studentProjects = (projects == null) ? new ArrayList<>() : projects;
+        List<Skill> studentSkills =
+                skills == null ? new ArrayList<>() : skills;
+        List<Project> studentProjects =
+                projects == null ? new ArrayList<>() : projects;
         List<Certification> studentCertifications =
-                (certifications == null) ? new ArrayList<>() : certifications;
+                certifications == null ? new ArrayList<>() : certifications;
         List<CodingStats> studentCodingStats =
-                (codingStatsList == null) ? new ArrayList<>() : codingStatsList;
-        List<Company> companyList = (companies == null) ? new ArrayList<>() : companies;
+                codingStatsList == null ? new ArrayList<>() : codingStatsList;
+        List<Company> companyList =
+                companies == null ? new ArrayList<>() : companies;
 
         ReadinessSummary summary = ReadinessCalculator.calculate(
                 student,
@@ -271,90 +272,69 @@ public class ReadinessActivity extends AppCompatActivity {
         bindSummary(summary);
     }
 
-    /**
-     * Renders the readiness summary. Every bar is a percentage, so all of them
-     * share the same 0 to 100 scale.
-     */
     private void bindSummary(ReadinessSummary summary) {
-
         readinessProgressBar.setVisibility(View.GONE);
         readinessMessageTextView.setVisibility(View.GONE);
         readinessResultsContainer.setVisibility(View.VISIBLE);
 
-        // Headline score
         readinessScoreTextView.setText(
-                getString(R.string.readiness_score_label, summary.getReadinessScore()));
+                getString(R.string.readiness_score_label,
+                        summary.getReadinessScore()));
         readinessScoreProgressBar.setProgress(summary.getReadinessScore());
 
-        // Profile completion
         readinessProfileTextView.setText(
-                getString(
-                        R.string.readiness_profile_completion,
-                        summary.getProfileCompletionPercent()
-                ));
-        readinessProfileProgressBar.setProgress(summary.getProfileCompletionPercent());
+                getString(R.string.readiness_profile_completion,
+                        summary.getProfileCompletionPercent()));
+        readinessProfileProgressBar.setProgress(
+                summary.getProfileCompletionPercent());
 
-        // Skills
         readinessSkillsTextView.setText(
-                getString(
-                        R.string.readiness_skills,
+                getString(R.string.readiness_skills,
                         summary.getTotalSkills(),
-                        ReadinessCalculator.TARGET_SKILLS
-                ));
+                        ReadinessCalculator.TARGET_SKILLS));
         readinessSkillsProgressBar.setProgress(summary.getSkillsPercent());
 
-        // Projects
         readinessProjectsTextView.setText(
-                getString(
-                        R.string.readiness_projects,
+                getString(R.string.readiness_projects,
                         summary.getTotalProjects(),
-                        ReadinessCalculator.TARGET_PROJECTS
-                ));
+                        ReadinessCalculator.TARGET_PROJECTS));
         readinessProjectsProgressBar.setProgress(summary.getProjectsPercent());
 
-        // Certifications
         readinessCertificationsTextView.setText(
-                getString(
-                        R.string.readiness_certifications,
+                getString(R.string.readiness_certifications,
                         summary.getTotalCertifications(),
-                        ReadinessCalculator.TARGET_CERTIFICATIONS
-                ));
-        readinessCertificationsProgressBar.setProgress(summary.getCertificationsPercent());
+                        ReadinessCalculator.TARGET_CERTIFICATIONS));
+        readinessCertificationsProgressBar.setProgress(
+                summary.getCertificationsPercent());
 
-        // Coding practice, with the easy / medium / hard breakdown
         readinessCodingTextView.setText(
-                getString(
-                        R.string.readiness_coding,
+                getString(R.string.readiness_coding,
                         summary.getCodingTotal(),
                         summary.getCodingEasy(),
                         summary.getCodingMedium(),
-                        summary.getCodingHard()
-                ));
+                        summary.getCodingHard()));
         readinessCodingProgressBar.setProgress(summary.getCodingPercent());
 
-        // Eligibility progress, or a clear note when no company exists yet
         if (summary.isEligibilityAvailable()) {
             readinessEligibilityTextView.setText(
-                    getString(
-                            R.string.readiness_eligibility,
+                    getString(R.string.readiness_eligibility,
                             summary.getEligibleCompanyCount(),
                             summary.getTotalCompanyCount(),
-                            summary.getEligibilityPercent()
-                    ));
+                            summary.getEligibilityPercent()));
         } else {
-            readinessEligibilityTextView.setText(R.string.readiness_no_companies);
+            readinessEligibilityTextView.setText(
+                    R.string.readiness_no_companies);
         }
-        readinessEligibilityProgressBar.setProgress(summary.getEligibilityPercent());
 
-        // How the score is built, so the number is never a black box
+        readinessEligibilityProgressBar.setProgress(
+                summary.getEligibilityPercent());
+
         readinessMethodTextView.setText(
-                getString(
-                        R.string.readiness_method_body,
+                getString(R.string.readiness_method_body,
                         ReadinessCalculator.TARGET_SKILLS,
                         ReadinessCalculator.TARGET_PROJECTS,
                         ReadinessCalculator.TARGET_CERTIFICATIONS,
-                        ReadinessCalculator.TARGET_CODING_PROBLEMS
-                ));
+                        ReadinessCalculator.TARGET_CODING_PROBLEMS));
     }
 
     private void showLoadingState() {
@@ -371,8 +351,12 @@ public class ReadinessActivity extends AppCompatActivity {
     }
 
     private void goToLogin() {
-        Intent intent = new Intent(ReadinessActivity.this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        Intent intent = new Intent(
+                ReadinessActivity.this,
+                MainActivity.class);
+        intent.addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK |
+                        Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
     }
