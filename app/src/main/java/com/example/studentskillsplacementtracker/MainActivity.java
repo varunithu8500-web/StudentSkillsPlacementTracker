@@ -86,7 +86,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void openDashboardFor(Student student) {
 
-        String role = (student == null) ? null : student.getRole();
+        // A null Student means the Firestore document does not exist for this
+        // Firebase Auth account. This can happen when registration succeeded
+        // in Auth but the subsequent Firestore write failed. Sign out so the
+        // auto-route in onCreate cannot loop back here on every subsequent
+        // launch, then show a clear message so the user knows what to do.
+        if (student == null) {
+            firebaseAuth.signOut();
+            showRoutingError(R.string.err_profile_missing);
+            return;
+        }
+
+        String role = student.getRole();
 
         if (Student.ROLE_STUDENT.equals(role)) {
             openDashboard(StudentHomeActivity.class);

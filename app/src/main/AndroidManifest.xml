@@ -11,6 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.StudentSkillsPlacementTracker">
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -21,71 +22,98 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".RegisterActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity"
             android:windowSoftInputMode="adjustResize" />
+
         <activity
             android:name=".StudentHomeActivity"
             android:exported="false" />
+
+        <!-- Student profile editing -->
+        <activity
+            android:name=".EditProfileActivity"
+            android:exported="false"
+            android:parentActivityName=".StudentHomeActivity"
+            android:windowSoftInputMode="adjustResize" />
+
         <activity
             android:name=".SkillsActivity"
             android:exported="false" />
+
         <activity
             android:name=".AddEditSkillActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+
         <activity
             android:name=".ProjectsActivity"
             android:exported="false" />
+
         <activity
             android:name=".AddEditProjectActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+
         <activity
             android:name=".CertificationsActivity"
             android:exported="false" />
+
         <activity
             android:name=".AddEditCertificationActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+
         <activity
             android:name=".CodingStatsActivity"
             android:exported="false" />
+
         <activity
             android:name=".AddEditCodingStatsActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+
         <activity
             android:name=".CoordinatorHomeActivity"
             android:exported="false" />
+
         <activity
             android:name=".CompaniesActivity"
             android:exported="false" />
+
         <activity
             android:name=".AddEditCompanyActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+
         <activity
             android:name=".StudentCompaniesActivity"
             android:exported="false" />
+
         <activity
             android:name=".EligibilityActivity"
             android:exported="false" />
+
         <activity
             android:name=".AnnouncementsActivity"
             android:exported="false" />
+
         <activity
             android:name=".AddEditAnnouncementActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+
         <activity
             android:name=".StudentAnnouncementsActivity"
             android:exported="false" />
+
         <activity
             android:name=".ReadinessActivity"
             android:exported="false" />
+
     </application>
 
 </manifest>

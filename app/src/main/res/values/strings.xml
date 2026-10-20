@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Student Skills &amp; Placement Tracker</string>
+    <string name="app_name">Nexora</string>
 
     <!-- Student registration -->
     <string name="register_title">Student Registration</string>
@@ -54,6 +55,7 @@
 
     <!-- Student profile / dashboard -->
     <string name="student_home_profile_section">Profile</string>
+    <string name="btn_edit_profile">Edit Profile</string>
     <string name="student_home_label_name">Name: %1$s</string>
     <string name="student_home_label_email">Email: %1$s</string>
     <string name="student_home_label_department">Department: %1$s</string>
@@ -151,7 +153,7 @@
     <string name="certifications_title">My Certifications</string>
     <string name="btn_add_certification">Add Certification</string>
     <string name="certifications_empty">You have not added any certifications yet.</string>
-    <string name="certifications_load_error">Could not load your certifications. Please check your connection and try again.</string>
+    <string name="certifications_load_error">Could not load certifications. Please check your connection and try again.</string>
 
     <!-- Add / edit certification form -->
     <string name="certification_add_title">Add Certification</string>
@@ -188,7 +190,7 @@
     <string name="coding_stats_title">Coding Practice Statistics</string>
     <string name="btn_add_coding_stats">Add Coding Statistics</string>
     <string name="coding_stats_empty">You have not added any coding statistics yet.</string>
-    <string name="coding_stats_load_error">Could not load your coding statistics. Please check your connection and try again.</string>
+    <string name="coding_stats_load_error">Could not load coding statistics. Please check your connection and try again.</string>
 
     <!-- Add / edit coding statistics form -->
     <string name="coding_stats_add_title">Add Coding Statistics</string>
@@ -220,7 +222,7 @@
     <string name="msg_coding_stats_deleted">Coding statistics deleted</string>
     <string name="err_coding_stats_save_failed">Could not save the coding statistics. Please check your connection and try again.</string>
     <string name="err_coding_stats_delete_failed">Could not delete the coding statistics. Please check your connection and try again.</string>
-    <string name="err_coding_stats_load_failed">Could not load the coding statistics. Please check your connection and try again.</string>
+    <string name="err_coding_stats_load_failed">Could not load coding statistics. Please check your connection and try again.</string>
 
     <!-- Delete coding statistics confirmation -->
     <string name="dialog_delete_coding_stats_title">Delete this coding statistics entry?</string>
@@ -327,6 +329,7 @@
 
     <!-- Login routing -->
     <string name="err_role_unknown">Your account role is not recognised. Please contact the placement coordinator.</string>
+    <string name="err_profile_missing">Your account profile was not found. Please register again or contact the placement coordinator.</string>
 
     <!-- Student company browsing (read only) -->
     <string name="btn_companies">Companies</string>

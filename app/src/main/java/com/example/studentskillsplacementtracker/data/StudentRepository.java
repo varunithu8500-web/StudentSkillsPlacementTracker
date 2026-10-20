@@ -11,15 +11,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Single point of access to Cloud Firestore for student profiles.
- *
- * Profiles live in the {@code students} collection and use the Firebase
- * Authentication UID as the document id. This class contains no UI code.
- */
 public class StudentRepository {
 
-    public static final String COLLECTION_STUDENTS = "students";
+    private static final String COLLECTION_STUDENTS = "students";
 
     private static final String FIELD_UID = "uid";
     private static final String FIELD_NAME = "name";
@@ -38,14 +32,13 @@ public class StudentRepository {
         studentsCollection = firestore.collection(COLLECTION_STUDENTS);
     }
 
-    /**
-     * Creates (or overwrites) the profile document for {@code student}, keyed by
-     * the student's Firebase Authentication UID. Creation and update timestamps
-     * are set by the server.
-     */
-    public void createProfile(Student student, OnCompleteListener<Void> listener) {
+    // Create a new student profile.
+    public void createProfile(
+            Student student,
+            OnCompleteListener<Void> listener) {
 
         Map<String, Object> profile = new HashMap<>();
+
         profile.put(FIELD_UID, student.getUid());
         profile.put(FIELD_NAME, student.getName());
         profile.put(FIELD_EMAIL, student.getEmail());
@@ -56,30 +49,54 @@ public class StudentRepository {
         profile.put(FIELD_CREATED_AT, FieldValue.serverTimestamp());
         profile.put(FIELD_UPDATED_AT, FieldValue.serverTimestamp());
 
-        studentsCollection.document(student.getUid())
+        studentsCollection
+                .document(student.getUid())
                 .set(profile)
                 .addOnCompleteListener(listener);
     }
 
-    /**
-     * Loads the profile document for {@code uid}.
-     *
-     * {@code onSuccess} receives the mapped {@link Student}, or {@code null}
-     * when no document exists for that UID. {@code onFailure} is invoked for
-     * Firestore / network errors.
-     */
-    public void getProfile(String uid,
-                           OnSuccessListener<Student> onSuccess,
-                           OnFailureListener onFailure) {
+    // Retrieve a student's profile.
+    public void getProfile(
+            String uid,
+            OnSuccessListener<Student> onSuccess,
+            OnFailureListener onFailure) {
 
-        studentsCollection.document(uid).get()
+        studentsCollection
+                .document(uid)
+                .get()
                 .addOnSuccessListener(snapshot -> {
+
                     if (snapshot.exists()) {
-                        onSuccess.onSuccess(snapshot.toObject(Student.class));
+                        Student student = snapshot.toObject(Student.class);
+                        onSuccess.onSuccess(student);
                     } else {
                         onSuccess.onSuccess(null);
                     }
+
                 })
                 .addOnFailureListener(onFailure);
+    }
+
+    // Update editable student profile fields.
+    public void updateProfile(
+            String uid,
+            String name,
+            String department,
+            int year,
+            double cgpa,
+            OnCompleteListener<Void> listener) {
+
+        Map<String, Object> updates = new HashMap<>();
+
+        updates.put(FIELD_NAME, name);
+        updates.put(FIELD_DEPARTMENT, department);
+        updates.put(FIELD_YEAR, year);
+        updates.put(FIELD_CGPA, cgpa);
+        updates.put(FIELD_UPDATED_AT, FieldValue.serverTimestamp());
+
+        studentsCollection
+                .document(uid)
+                .update(updates)
+                .addOnCompleteListener(listener);
     }
 }

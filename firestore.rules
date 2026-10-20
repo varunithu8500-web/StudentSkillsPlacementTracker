@@ -1,0 +1,189 @@
+rules_version = '2';
+
+// ============================================================
+// Student Skills & Placement Tracker — Firestore Security Rules
+// ============================================================
+// Field names verified against Java repositories on 2026-10-20:
+//
+//   students/{uid}
+//     uid, name, email, department, year, cgpa, role,
+//     createdAt, updatedAt
+//
+//   students/{uid}/skills/{skillId}
+//     skillId, userId, skillName, proficiency, progress,
+//     createdAt, updatedAt
+//
+//   students/{uid}/projects/{projectId}
+//     projectId, userId, projectName, description, technologies,
+//     status, repositoryLink, createdAt, updatedAt
+//
+//   students/{uid}/certifications/{certificationId}
+//     certificationId, userId, certificationName, organization,
+//     date, credential, createdAt, updatedAt
+//
+//   students/{uid}/coding/{codingId}
+//     codingId, userId, platform, easy, medium, hard, total,
+//     createdAt, updatedAt
+//
+//   companies/{companyId}
+//     companyId, companyName, role (job role string), minimumCGPA,
+//     requiredSkills, minimumProjects, location, createdAt, updatedAt
+//
+//   announcements/{announcementId}
+//     announcementId, title, description, companyName, date,
+//     createdAt, updatedAt
+// ============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ----------------------------------------------------------
+    // Helper: caller is authenticated
+    // ----------------------------------------------------------
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // ----------------------------------------------------------
+    // Helper: caller's Firestore profile has coordinator or admin
+    // role. Reads the caller's OWN student document, so a missing
+    // profile returns null — a missing profile can never grant
+    // elevated access (no privilege escalation via orphaned accounts).
+    // ----------------------------------------------------------
+    function isCoordinator() {
+      let callerProfile =
+        get(/databases/$(database)/documents/students/$(request.auth.uid));
+      return isAuthenticated()
+          && callerProfile != null
+          && callerProfile.data.role in ['coordinator', 'admin'];
+    }
+
+    // ----------------------------------------------------------
+    // Helper: caller owns the student document being accessed
+    // ----------------------------------------------------------
+    function isOwner(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+
+    // ==========================================================
+    // students/{uid}  — profile document
+    // ==========================================================
+    match /students/{uid} {
+
+      // Students may read their own profile.
+      // Coordinators may read any student profile.
+      allow read: if isOwner(uid) || isCoordinator();
+
+      // --------------------------------------------------------
+      // CREATE — called once during RegisterActivity
+      //
+      // Enforces:
+      //   • caller is authenticated
+      //   • caller is creating their OWN document (UID match)
+      //   • the 'uid' field stored inside must equal the document ID
+      //   • role must be exactly 'student' — rejects any attempt to
+      //     self-assign 'coordinator' or 'admin' at registration
+      //   • no unexpected extra fields (allowlist approach)
+      // --------------------------------------------------------
+      allow create: if isAuthenticated()
+          && request.auth.uid == uid
+          && request.resource.data.uid == uid
+          && request.resource.data.role == 'student'
+          && request.resource.data.keys().hasOnly([
+               'uid', 'name', 'email', 'department',
+               'year', 'cgpa', 'role', 'createdAt', 'updatedAt'
+             ]);
+
+      // --------------------------------------------------------
+      // UPDATE — called by StudentRepository.updateProfile()
+      //
+      // Only the owning student may update their own profile.
+      //
+      // Immutable fields — these must remain identical to their
+      // stored values in every update request:
+      //   uid       — document identity, must never change
+      //   role      — role changes require out-of-band admin action
+      //   email     — no email-update workflow is implemented
+      //   createdAt — server-owned bookkeeping timestamp
+      //
+      // The affectedKeys() check restricts which fields may actually
+      // differ between the incoming and stored data.  Only the four
+      // editable profile fields plus updatedAt are allowed to change.
+      // Any attempt to slip uid, role, email, or createdAt into a
+      // partial update is rejected.
+      //
+      // Compatible with StudentRepository.updateProfile() which
+      // writes: name, department, year, cgpa, updatedAt.
+      // --------------------------------------------------------
+      allow update: if isOwner(uid)
+          && request.resource.data.uid       == resource.data.uid
+          && request.resource.data.role      == resource.data.role
+          && request.resource.data.email     == resource.data.email
+          && request.resource.data.createdAt == resource.data.createdAt
+          && request.resource.data.diff(resource.data).affectedKeys()
+               .hasOnly(['name', 'department', 'year', 'cgpa', 'updatedAt']);
+
+      // DELETE — not used by the application; deny to everyone.
+      allow delete: if false;
+
+      // ========================================================
+      // students/{uid}/skills/{skillId}
+      // ========================================================
+      match /skills/{skillId} {
+        allow read, write: if isOwner(uid);
+      }
+
+      // ========================================================
+      // students/{uid}/projects/{projectId}
+      // ========================================================
+      match /projects/{projectId} {
+        allow read, write: if isOwner(uid);
+      }
+
+      // ========================================================
+      // students/{uid}/certifications/{certificationId}
+      // ========================================================
+      match /certifications/{certificationId} {
+        allow read, write: if isOwner(uid);
+      }
+
+      // ========================================================
+      // students/{uid}/coding/{codingId}
+      // ========================================================
+      match /coding/{codingId} {
+        allow read, write: if isOwner(uid);
+      }
+    }
+
+    // ==========================================================
+    // companies/{companyId}
+    // ==========================================================
+    // Any authenticated user may read (students browse companies
+    // and check eligibility). Only coordinators / admins may
+    // create, update, or delete.
+    match /companies/{companyId} {
+      allow read:  if isAuthenticated();
+      allow write: if isCoordinator();
+    }
+
+    // ==========================================================
+    // announcements/{announcementId}
+    // ==========================================================
+    // Any authenticated user may read. Only coordinators / admins
+    // may publish, edit, or remove announcements.
+    match /announcements/{announcementId} {
+      allow read:  if isAuthenticated();
+      allow write: if isCoordinator();
+    }
+
+    // ==========================================================
+    // Catch-all: deny everything not matched above.
+    // Firestore denies by default, but this makes the intent
+    // explicit and ensures any future collection is secure until
+    // a rule is deliberately added for it.
+    // ==========================================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

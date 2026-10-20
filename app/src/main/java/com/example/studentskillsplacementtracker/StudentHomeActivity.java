@@ -18,10 +18,8 @@ import com.google.firebase.auth.FirebaseUser;
 /**
  * Authenticated landing screen for students.
  *
- * Phase 2 scope: session guard, student profile display (name, email,
- * department, year, CGPA) loaded from Firestore, and logout. Skills, projects,
- * certifications, coding practice, companies, eligibility and announcements are
- * added in later phases.
+ * Displays the student's profile, provides navigation to placement preparation
+ * features, supports profile editing, refreshes profile data, and handles logout.
  */
 public class StudentHomeActivity extends AppCompatActivity {
 
@@ -37,6 +35,8 @@ public class StudentHomeActivity extends AppCompatActivity {
     private TextView yearTextView;
     private TextView cgpaTextView;
     private TextView profileMessageTextView;
+
+    private Button editProfileButton;
     private Button skillsButton;
     private Button projectsButton;
     private Button certificationsButton;
@@ -49,16 +49,19 @@ public class StudentHomeActivity extends AppCompatActivity {
     // Email of the signed-in account, used as a fallback welcome value.
     private String userEmail;
 
+    // Prevents a duplicate profile load during the first screen opening.
+    private boolean hasResumedOnce = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Get Firebase Authentication instance
         firebaseAuth = FirebaseAuth.getInstance();
         studentRepository = new StudentRepository();
 
-        // Navigation guard: this screen must never be shown without a session
+        // Prevent access to this screen without an authenticated session.
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+
         if (currentUser == null) {
             goToLogin();
             return;
@@ -66,7 +69,7 @@ public class StudentHomeActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_student_home);
 
-        // Connect XML components with Java
+        // Connect XML components with Java.
         welcomeTextView = findViewById(R.id.welcomeTextView);
         profileProgressBar = findViewById(R.id.profileProgressBar);
         profileContainer = findViewById(R.id.profileContainer);
@@ -76,6 +79,8 @@ public class StudentHomeActivity extends AppCompatActivity {
         yearTextView = findViewById(R.id.yearTextView);
         cgpaTextView = findViewById(R.id.cgpaTextView);
         profileMessageTextView = findViewById(R.id.profileMessageTextView);
+
+        editProfileButton = findViewById(R.id.editProfileButton);
         skillsButton = findViewById(R.id.skillsButton);
         projectsButton = findViewById(R.id.projectsButton);
         certificationsButton = findViewById(R.id.certificationsButton);
@@ -85,54 +90,109 @@ public class StudentHomeActivity extends AppCompatActivity {
         readinessButton = findViewById(R.id.readinessButton);
         logoutButton = findViewById(R.id.logoutButton);
 
-        // Welcome the authenticated user right away; refined once the profile loads
+        // Welcome the authenticated user immediately.
         userEmail = currentUser.getEmail();
         setWelcome(userEmail);
 
-        // Open the skills list
+        // Open the profile editing screen.
+        editProfileButton.setOnClickListener(view ->
+                startActivity(new Intent(
+                        StudentHomeActivity.this,
+                        EditProfileActivity.class
+                )));
+
+        // Open the skills list.
         skillsButton.setOnClickListener(view ->
-                startActivity(new Intent(StudentHomeActivity.this, SkillsActivity.class)));
+                startActivity(new Intent(
+                        StudentHomeActivity.this,
+                        SkillsActivity.class
+                )));
 
-        // Open the projects list
+        // Open the projects list.
         projectsButton.setOnClickListener(view ->
-                startActivity(new Intent(StudentHomeActivity.this, ProjectsActivity.class)));
+                startActivity(new Intent(
+                        StudentHomeActivity.this,
+                        ProjectsActivity.class
+                )));
 
-        // Open the certifications list
+        // Open the certifications list.
         certificationsButton.setOnClickListener(view ->
-                startActivity(new Intent(StudentHomeActivity.this, CertificationsActivity.class)));
+                startActivity(new Intent(
+                        StudentHomeActivity.this,
+                        CertificationsActivity.class
+                )));
 
-        // Open the coding practice statistics list
+        // Open coding practice statistics.
         codingButton.setOnClickListener(view ->
-                startActivity(new Intent(StudentHomeActivity.this, CodingStatsActivity.class)));
+                startActivity(new Intent(
+                        StudentHomeActivity.this,
+                        CodingStatsActivity.class
+                )));
 
-        // Browse companies and check eligibility
+        // Browse companies and check eligibility.
         companiesButton.setOnClickListener(view ->
-                startActivity(new Intent(StudentHomeActivity.this, StudentCompaniesActivity.class)));
+                startActivity(new Intent(
+                        StudentHomeActivity.this,
+                        StudentCompaniesActivity.class
+                )));
 
-        // View placement announcements
+        // View placement announcements.
         announcementsButton.setOnClickListener(view ->
-                startActivity(new Intent(StudentHomeActivity.this, StudentAnnouncementsActivity.class)));
+                startActivity(new Intent(
+                        StudentHomeActivity.this,
+                        StudentAnnouncementsActivity.class
+                )));
 
-        // Open the placement readiness dashboard
+        // Open the placement readiness dashboard.
         readinessButton.setOnClickListener(view ->
-                startActivity(new Intent(StudentHomeActivity.this, ReadinessActivity.class)));
+                startActivity(new Intent(
+                        StudentHomeActivity.this,
+                        ReadinessActivity.class
+                )));
 
-        // Logout button click
+        // Sign out.
         logoutButton.setOnClickListener(view -> logout());
 
+        // Load the profile when the screen is first created.
         loadProfile(currentUser.getUid());
     }
 
     /**
-     * Loads the student profile document for the authenticated user.
+     * Refreshes profile data whenever the student returns to this screen.
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Skip the first resume because onCreate() already loads the profile.
+        if (hasResumedOnce) {
+
+            FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+
+            if (currentUser != null) {
+                userEmail = currentUser.getEmail();
+                loadProfile(currentUser.getUid());
+            } else {
+                goToLogin();
+            }
+        }
+
+        hasResumedOnce = true;
+    }
+
+    /**
+     * Loads the profile belonging to the authenticated user.
      */
     private void loadProfile(String uid) {
 
         showLoadingState();
 
-        studentRepository.getProfile(uid,
+        studentRepository.getProfile(
+                uid,
                 student -> {
+
                     profileProgressBar.setVisibility(View.GONE);
+
                     if (student == null) {
                         showMessage(R.string.student_home_profile_missing);
                     } else {
@@ -140,25 +200,47 @@ public class StudentHomeActivity extends AppCompatActivity {
                     }
                 },
                 exception -> {
+
                     profileProgressBar.setVisibility(View.GONE);
                     showMessage(R.string.student_home_profile_error);
-                });
+                }
+        );
     }
 
+    /**
+     * Displays the loaded student profile.
+     */
     private void bindProfile(Student student) {
 
         profileMessageTextView.setVisibility(View.GONE);
         profileContainer.setVisibility(View.VISIBLE);
 
-        // Prefer the profile name; fall back to the account email.
         setWelcome(student.getName());
 
-        nameTextView.setText(getString(R.string.student_home_label_name, safe(student.getName())));
-        emailTextView.setText(getString(R.string.student_home_label_email, safe(student.getEmail())));
-        departmentTextView.setText(
-                getString(R.string.student_home_label_department, safe(student.getDepartment())));
-        yearTextView.setText(getString(R.string.student_home_label_year, String.valueOf(student.getYear())));
-        cgpaTextView.setText(getString(R.string.student_home_label_cgpa, String.valueOf(student.getCgpa())));
+        nameTextView.setText(getString(
+                R.string.student_home_label_name,
+                safe(student.getName())
+        ));
+
+        emailTextView.setText(getString(
+                R.string.student_home_label_email,
+                safe(student.getEmail())
+        ));
+
+        departmentTextView.setText(getString(
+                R.string.student_home_label_department,
+                safe(student.getDepartment())
+        ));
+
+        yearTextView.setText(getString(
+                R.string.student_home_label_year,
+                String.valueOf(student.getYear())
+        ));
+
+        cgpaTextView.setText(getString(
+                R.string.student_home_label_cgpa,
+                String.valueOf(student.getCgpa())
+        ));
     }
 
     private void showLoadingState() {
@@ -174,14 +256,19 @@ public class StudentHomeActivity extends AppCompatActivity {
     }
 
     private void setWelcome(String preferredValue) {
+
         String value = (preferredValue != null && !preferredValue.isEmpty())
                 ? preferredValue
                 : userEmail;
 
         if (value == null || value.isEmpty()) {
-            welcomeTextView.setText(R.string.student_home_welcome_unknown);
+            welcomeTextView.setText(
+                    R.string.student_home_welcome_unknown
+            );
         } else {
-            welcomeTextView.setText(getString(R.string.student_home_welcome, value));
+            welcomeTextView.setText(
+                    getString(R.string.student_home_welcome, value)
+            );
         }
     }
 
@@ -190,8 +277,7 @@ public class StudentHomeActivity extends AppCompatActivity {
     }
 
     /**
-     * Signs the user out and returns to the login screen. The task is cleared so
-     * this authenticated screen cannot be reached again from the back stack.
+     * Signs out the user and clears the authenticated screen from the back stack.
      */
     private void logout() {
         firebaseAuth.signOut();
@@ -199,8 +285,17 @@ public class StudentHomeActivity extends AppCompatActivity {
     }
 
     private void goToLogin() {
-        Intent intent = new Intent(StudentHomeActivity.this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+        Intent intent = new Intent(
+                StudentHomeActivity.this,
+                MainActivity.class
+        );
+
+        intent.addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_CLEAR_TASK
+        );
+
         startActivity(intent);
         finish();
     }

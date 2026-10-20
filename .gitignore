@@ -13,3 +13,11 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Node / Firebase emulator test tooling
+node_modules/
+package-lock.json
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
