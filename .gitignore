@@ -21,3 +21,6 @@ package-lock.json
 firebase-debug.log
 firestore-debug.log
 ui-debug.log
+
+# Firebase configuration kept locally
+app/google-services.json
